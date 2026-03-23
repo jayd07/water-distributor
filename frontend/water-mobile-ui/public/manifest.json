@@ -1,0 +1,9 @@
+
+{
+"name":"Water Distributor",
+"short_name":"WaterApp",
+"display":"standalone",
+"start_url":"/",
+"background_color":"#ffffff",
+"theme_color":"#2196f3"
+}

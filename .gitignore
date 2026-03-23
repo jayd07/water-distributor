@@ -1,0 +1,58 @@
+############################
+# IDE / OS
+############################
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+############################
+# Backend (Java / Maven / Spring)
+############################
+backend/target/
+backend/.mvn/
+backend/*.log
+backend/.m2/
+
+# Maven local repo (if accidentally inside project)
+.m2/
+
+############################
+# Environment / Secrets
+############################
+*.env
+*.env.*
+backend/application-local.properties
+backend/application-local.yml
+
+############################
+# Frontend (Node / React / Vue)
+############################
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.next/
+frontend/.nuxt/
+frontend/.cache/
+frontend/coverage/
+
+# Logs
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+############################
+# Ignore non-deployable frontend modules
+# (customize these based on your folders)
+############################
+frontend/dev-only/
+frontend/experimental/
+frontend/tests/
+
+############################
+# Misc
+############################
+*.log
+*.tmp
+*.swp

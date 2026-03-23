@@ -1,0 +1,45 @@
+{
+  "info": {
+    "name": "Water Distribution API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Customer",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/customers"
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\": \"Raj\", \"phone\": \"9999999999\", \"address\": \"Delhi\"}"
+        }
+      }
+    },
+    {
+      "name": "Get Customers",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:8080/customers"
+        }
+      }
+    },
+    {
+      "name": "Borrow Jar",
+      "request": {
+        "method": "POST",
+        "url": {
+          "raw": "http://localhost:8080/borrow?customerId=1&itemType=jar&quantity=2&deposit=200"
+        }
+      }
+    }
+  ]
+}
