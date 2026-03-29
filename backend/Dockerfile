@@ -12,6 +12,6 @@ WORKDIR /app
 
 COPY --from=build /app/target/water-distribution-system-1.0.jar app.jar
 
-EXPOSE 8099
+EXPOSE 8098
 
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
