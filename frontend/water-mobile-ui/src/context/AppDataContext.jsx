@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react"
-import { getCustomers, getErrorMessage, getInventory } from "../services/api"
+import { getCustomers, getErrorMessage, getInventory, getScopedCacheKey } from "../services/api"
 
 const AppDataContext = createContext(null)
 
@@ -11,14 +11,14 @@ const initialResourceState = {
 
 const readCachedArray = (key) => {
   try {
-    return JSON.parse(localStorage.getItem(key) || "[]")
+    return JSON.parse(localStorage.getItem(getScopedCacheKey(key)) || "[]")
   } catch {
     return []
   }
 }
 
 const writeCachedArray = (key, value) => {
-  localStorage.setItem(key, JSON.stringify(value))
+  localStorage.setItem(getScopedCacheKey(key), JSON.stringify(value))
 }
 
 const addActiveItem = (customer, itemType, quantity) => {

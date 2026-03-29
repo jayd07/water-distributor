@@ -3,6 +3,7 @@ import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded"
 import { Alert, Box, Button, Stack, TextField, Typography } from "@mui/material"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import CustomerSearch from "../components/CustomerSearch"
 import EmptyState from "../components/EmptyState"
 import SectionCard from "../components/SectionCard"
 import { useAppData } from "../context/AppDataContext"
@@ -19,8 +20,13 @@ function Customers() {
   const navigate = useNavigate()
   const { customers, customersState, refreshCustomers } = useAppData()
   const [form, setForm] = useState(initialForm)
+  const [searchCustomerId, setSearchCustomerId] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [feedback, setFeedback] = useState({ type: "", text: "" })
+
+  const visibleCustomers = searchCustomerId
+    ? customers.filter((customer) => String(customer.customerId) === String(searchCustomerId))
+    : customers
 
   const updateField = (field) => (event) => {
     setForm((current) => ({
@@ -60,9 +66,9 @@ function Customers() {
   return (
     <Box className="split-grid">
       <SectionCard
-        eyebrow="Onboarding"
+        eyebrow="Add customer"
         title="Create a customer profile"
-        description="Capture the essentials so the team can start borrowing, refilling, returning, and tracking balances from one record."
+        description="Save the key details once so Krishna RO can handle borrow, refill, return, and balance tracking from one record."
       >
         <Stack spacing={2}>
           {feedback.text && <Alert severity={feedback.type || "info"}>{feedback.text}</Alert>}
@@ -89,10 +95,20 @@ function Customers() {
       </SectionCard>
 
       <SectionCard
-        eyebrow="Client book"
+        eyebrow="Customer book"
         title="Customer roster"
-        description="Tap into each account to see activity, item balances, and remaining deposit exposure."
+        description="Open each account quickly to see activity, item count, and running balance."
       >
+        <Stack spacing={2} sx={{ mb: 2 }}>
+          <CustomerSearch
+            customers={customers}
+            selectedCustomerId={searchCustomerId}
+            onSelect={setSearchCustomerId}
+            label="Search customer"
+            placeholder="Search roster by name, phone, or address"
+          />
+        </Stack>
+
         {customersState.error && <Alert severity="warning">{customersState.error}</Alert>}
         {customersState.showingCachedData && !customersState.error && (
           <Alert severity="info" sx={{ mb: 2 }}>
@@ -100,9 +116,9 @@ function Customers() {
           </Alert>
         )}
 
-        {customers.length ? (
+        {visibleCustomers.length ? (
           <Box className="list-grid">
-            {customers.map((customer) => (
+            {visibleCustomers.map((customer) => (
               <Box key={customer.customerId} className="mini-card">
                 <Stack direction={{ xs: "column", md: "row" }} justifyContent="space-between" gap={1.5}>
                   <Box>
@@ -137,8 +153,12 @@ function Customers() {
           </Box>
         ) : (
           <EmptyState
-            title="No customers yet"
-            description="The roster will appear here as soon as you add the first customer."
+            title={customers.length ? "No matching customer" : "No customers yet"}
+            description={
+              customers.length
+                ? "Try another search term or clear the current customer search."
+                : "The roster will appear here as soon as you add the first customer."
+            }
           />
         )}
       </SectionCard>

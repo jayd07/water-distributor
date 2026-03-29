@@ -15,7 +15,7 @@ const navItems = [
     matches: (pathname) => pathname === "/"
   },
   {
-    label: "Clients",
+    label: "Customers",
     path: "/customers",
     icon: <GroupsRoundedIcon />,
     matches: (pathname) => pathname.startsWith("/customers")
@@ -33,7 +33,7 @@ const navItems = [
     matches: (pathname) => pathname.startsWith("/operations") || pathname.startsWith("/borrow")
   },
   {
-    label: "Money",
+    label: "Earnings",
     path: "/earnings",
     icon: <PaidRoundedIcon />,
     matches: (pathname) => pathname.startsWith("/earnings")

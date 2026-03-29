@@ -2,7 +2,6 @@ import AddBusinessRoundedIcon from "@mui/icons-material/AddBusinessRounded"
 import { Alert, Box, Button, LinearProgress, Stack, TextField, Typography } from "@mui/material"
 import { useState } from "react"
 import EmptyState from "../components/EmptyState"
-import MetricCard from "../components/MetricCard"
 import SectionCard from "../components/SectionCard"
 import { useAppData } from "../context/AppDataContext"
 import { addInventory, getErrorMessage } from "../services/api"
@@ -14,10 +13,6 @@ function Inventory() {
   const [quantity, setQuantity] = useState("1")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [feedback, setFeedback] = useState({ type: "", text: "" })
-
-  const totalStock = inventory.reduce((sum, item) => sum + Number(item.totalStock || 0), 0)
-  const availableStock = inventory.reduce((sum, item) => sum + Number(item.availableStock || 0), 0)
-  const borrowedStock = inventory.reduce((sum, item) => sum + Number(item.borrowedStock || 0), 0)
 
   const submitInventory = async () => {
     const parsedQuantity = Number(quantity)
@@ -51,39 +46,11 @@ function Inventory() {
   }
 
   return (
-    <Stack spacing={2.5}>
-      <Box className="dashboard-grid">
-        <MetricCard
-          label="Stock lines"
-          value={formatNumber(inventory.length)}
-          note="Distinct item types tracked"
-          tone="night"
-        />
-        <MetricCard
-          label="Total stock"
-          value={formatNumber(totalStock)}
-          note="Cumulative units recorded"
-          tone="ocean"
-        />
-        <MetricCard
-          label="Available now"
-          value={formatNumber(availableStock)}
-          note="Ready for the next operation"
-          tone="sage"
-        />
-        <MetricCard
-          label="Borrowed stock"
-          value={formatNumber(borrowedStock)}
-          note="Currently out with customers"
-          tone="sun"
-        />
-      </Box>
-
-      <Box className="split-grid">
+    <Box className="split-grid">
         <SectionCard
-          eyebrow="Stock intake"
-          title="Add or top up inventory"
-          description="Use the same form for brand new items or to increase stock on an existing item type."
+          eyebrow="Stock entry"
+          title="Add or top up stock"
+          description="Use the same form to create a new stock line or increase an existing one."
         >
           <Stack spacing={2}>
             {feedback.text && <Alert severity={feedback.type || "info"}>{feedback.text}</Alert>}
@@ -92,7 +59,7 @@ function Inventory() {
               label="Item type"
               value={itemType}
               onChange={(event) => setItemType(event.target.value)}
-              helperText="For this setup, 'jar' is the main operational item."
+              helperText="Use simple names like jar or cooler."
             />
 
             <TextField
@@ -115,9 +82,9 @@ function Inventory() {
         </SectionCard>
 
         <SectionCard
-          eyebrow="Live stock"
+          eyebrow="Current stock"
           title="Inventory lines"
-          description="See total, available, and borrowed stock at a glance so the desk can act confidently."
+          description="See what is total, available, and currently out with customers."
         >
           {inventoryState.error && <Alert severity="warning">{inventoryState.error}</Alert>}
           {inventoryState.showingCachedData && !inventoryState.error && (
@@ -173,8 +140,7 @@ function Inventory() {
             />
           )}
         </SectionCard>
-      </Box>
-    </Stack>
+    </Box>
   )
 }
 

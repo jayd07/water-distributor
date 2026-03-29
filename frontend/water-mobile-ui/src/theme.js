@@ -3,21 +3,21 @@ import { createTheme } from "@mui/material/styles"
 const theme = createTheme({
   palette: {
     primary: {
-      main: "#0f5fa8"
+      main: "#156b73"
     },
     secondary: {
-      main: "#cf6b2c"
+      main: "#d87b2d"
     },
     success: {
-      main: "#2f7d5c"
+      main: "#3d7f58"
     },
     background: {
-      default: "#f7efe2",
-      paper: "#fffaf4"
+      default: "#f4efe4",
+      paper: "#fffaf3"
     },
     text: {
-      primary: "#173042",
-      secondary: "#5f7383"
+      primary: "#1d3340",
+      secondary: "#60717a"
     }
   },
   shape: {

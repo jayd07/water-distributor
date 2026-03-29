@@ -2,8 +2,8 @@ import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded"
 import { Alert, Box, Button, Chip, MenuItem, Stack, TextField, Typography } from "@mui/material"
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
+import CustomerSearch from "../components/CustomerSearch"
 import EmptyState from "../components/EmptyState"
-import MetricCard from "../components/MetricCard"
 import SectionCard from "../components/SectionCard"
 import { useAppData } from "../context/AppDataContext"
 import { getErrorMessage, getLedger } from "../services/api"
@@ -98,31 +98,10 @@ function Ledger() {
 
   return (
     <Stack spacing={2.5}>
-      <Box className="dashboard-grid">
-        <MetricCard
-          label="Entries"
-          value={formatNumber(entries.length)}
-          note="Transactions recorded for this customer"
-          tone="ocean"
-        />
-        <MetricCard
-          label="Ledger value"
-          value={formatCurrency(totalAmount)}
-          note="Charges remain positive and refunds remain negative"
-          tone="sun"
-        />
-        <MetricCard
-          label="Active items"
-          value={formatNumber(getActiveItemCount(selectedCustomer))}
-          note="Current jar and cooler count together"
-          tone="sage"
-        />
-      </Box>
-
       <SectionCard
         eyebrow="Ledger view"
-        title="Customer activity timeline"
-        description="Switch customers, refresh on demand, and keep a live eye on borrows, refills, and returns."
+        title="Customer activity"
+        description="Switch customers, refresh on demand, and keep the full account history easy to read."
         action={
           <Button variant="outlined" startIcon={<RefreshRoundedIcon />} onClick={refreshLedger}>
             Refresh
@@ -130,6 +109,18 @@ function Ledger() {
         }
       >
         <Stack spacing={2}>
+          <CustomerSearch
+            customers={customers}
+            selectedCustomerId={selectedCustomerId}
+            onSelect={(nextId) => {
+              setSelectedCustomerId(nextId)
+              if (nextId) {
+                navigate(`/ledger/${nextId}`)
+              }
+            }}
+            label="Find customer"
+            placeholder="Search customer before opening ledger"
+          />
           <TextField
             select
             label="Choose customer"
@@ -146,6 +137,9 @@ function Ledger() {
 
           {selectedCustomer && (
             <Box className="status-row">
+              <Chip label={`${formatNumber(entries.length)} entries`} />
+              <Chip label={`Value ${formatCurrency(totalAmount)}`} />
+              <Chip label={`${formatNumber(getActiveItemCount(selectedCustomer))} active`} />
               <Chip label={`${formatNumber(selectedCustomer.activeJars)} jars`} />
               <Chip label={`${formatNumber(selectedCustomer.activeCoolers)} coolers`} />
               <Chip label={`Deposit ${formatCurrency(selectedCustomer.depositBalance)}`} />

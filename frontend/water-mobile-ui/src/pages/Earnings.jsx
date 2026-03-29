@@ -12,6 +12,7 @@ import {
   Typography
 } from "@mui/material"
 import { useEffect, useState } from "react"
+import CustomerSearch from "../components/CustomerSearch"
 import EmptyState from "../components/EmptyState"
 import MetricCard from "../components/MetricCard"
 import SectionCard from "../components/SectionCard"
@@ -246,14 +247,16 @@ function Earnings() {
                     {feedback.settlement.text}
                   </Alert>
                 )}
-                <TextField
-                  select
-                  label="Customer"
-                  value={settlementForm.customerId}
-                  onChange={(event) =>
-                    setSettlementForm((current) => ({ ...current, customerId: event.target.value }))
+                <CustomerSearch
+                  customers={customers}
+                  selectedCustomerId={settlementForm.customerId}
+                  onSelect={(customerId) =>
+                    setSettlementForm((current) => ({ ...current, customerId }))
                   }
-                >
+                  label="Find customer"
+                  placeholder="Search customer before settlement"
+                />
+                <TextField select label="Customer" value={settlementForm.customerId} disabled>
                   {customers.map((customer) => (
                     <MenuItem key={customer.customerId} value={String(customer.customerId)}>
                       {customer.name}
@@ -294,7 +297,7 @@ function Earnings() {
                       />
                     </Stack>
                     <Typography sx={{ mt: 1.5, color: "text.secondary" }}>
-                      Negative means the customer owes the client. Positive means deposit is still available.
+                      Negative means the customer owes Krishna RO. Positive means deposit is still available.
                     </Typography>
                   </Box>
                 )}

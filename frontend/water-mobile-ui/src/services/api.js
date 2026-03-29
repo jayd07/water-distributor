@@ -1,23 +1,53 @@
 import axios from "axios"
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? "/api" : "http://localhost:8099")
+  import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? "/api" : "http://localhost:8098")
+
+const APP_CACHE_VERSION = "v2"
+const CACHE_NAMESPACE = `krishna-ro:${APP_CACHE_VERSION}:${API_BASE_URL}`
+const LEGACY_CACHE_KEYS = ["customers", "inventory"]
 
 const API = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000
 })
 
+const getScopedCacheKey = (key) => `${CACHE_NAMESPACE}:${key}`
+
+const clearLegacyCache = () => {
+  try {
+    const lastNamespace = localStorage.getItem("krishna-ro:last-cache-namespace")
+
+    if (lastNamespace !== CACHE_NAMESPACE) {
+      Object.keys(localStorage).forEach((key) => {
+        if (
+          key.startsWith("krishna-ro:") ||
+          LEGACY_CACHE_KEYS.includes(key) ||
+          key.startsWith("ledger:")
+        ) {
+          localStorage.removeItem(key)
+        }
+      })
+
+      localStorage.setItem("krishna-ro:last-cache-namespace", CACHE_NAMESPACE)
+    }
+  } catch {
+    // Ignore localStorage cleanup issues and continue with live requests.
+  }
+}
+
+clearLegacyCache()
+
 const readCache = (key, fallback = []) => {
   try {
-    return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback))
+    return JSON.parse(localStorage.getItem(getScopedCacheKey(key)) || JSON.stringify(fallback))
   } catch {
     return fallback
   }
 }
 
 const writeCache = (key, value) => {
-  localStorage.setItem(key, JSON.stringify(value))
+  localStorage.setItem(getScopedCacheKey(key), JSON.stringify(value))
 }
 
 const fetchWithCache = async (cacheKey, request, fallback = []) => {
@@ -156,3 +186,5 @@ export const getEarnings = async ({ from, to } = {}) => {
 
 export const getLedger = (customerId) =>
   fetchWithCache(`ledger:${customerId}`, () => API.get(`/ledger/${customerId}`))
+
+export { API_BASE_URL, getScopedCacheKey }

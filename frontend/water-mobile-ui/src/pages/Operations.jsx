@@ -1,5 +1,6 @@
 import { Alert, Box, Button, MenuItem, Stack, Tab, Tabs, TextField, Typography } from "@mui/material"
 import { useEffect, useState } from "react"
+import CustomerSearch from "../components/CustomerSearch"
 import EmptyState from "../components/EmptyState"
 import SectionCard from "../components/SectionCard"
 import { useAppData } from "../context/AppDataContext"
@@ -97,6 +98,12 @@ function Operations() {
       current.itemType ? current : { ...current, itemType: inventory[0].itemType }
     )
   }, [inventory])
+
+  const updateSelectedCustomer = (customerId) => {
+    setBorrowForm((current) => ({ ...current, customerId }))
+    setRefillForm((current) => ({ ...current, customerId }))
+    setReturnForm((current) => ({ ...current, customerId }))
+  }
 
   const setMessage = (key, type, text) => {
     setFeedback((current) => ({
@@ -317,6 +324,16 @@ function Operations() {
           />
         ) : (
           <Stack spacing={2}>
+            <CustomerSearch
+              customers={customers}
+              selectedCustomerId={
+                borrowForm.customerId || refillForm.customerId || returnForm.customerId || ""
+              }
+              onSelect={updateSelectedCustomer}
+              label="Find customer"
+              placeholder="Search before recording borrow, refill, or return"
+            />
+
             <Tabs value={tab} onChange={(_, nextValue) => setTab(nextValue)} variant="fullWidth">
               <Tab value="borrow" label="Borrow" />
               <Tab value="refill" label="Refill" />
@@ -334,14 +351,7 @@ function Operations() {
                   {feedback.borrow.text && (
                     <Alert severity={feedback.borrow.type || "info"}>{feedback.borrow.text}</Alert>
                   )}
-                  <TextField
-                    select
-                    label="Customer"
-                    value={borrowForm.customerId}
-                    onChange={(event) =>
-                      setBorrowForm((current) => ({ ...current, customerId: event.target.value }))
-                    }
-                  >
+                  <TextField select label="Customer" value={borrowForm.customerId} disabled>
                     {renderCustomerOptions()}
                   </TextField>
                   <TextField
@@ -389,14 +399,7 @@ function Operations() {
                 {feedback.refill.text && (
                   <Alert severity={feedback.refill.type || "info"}>{feedback.refill.text}</Alert>
                 )}
-                <TextField
-                  select
-                  label="Customer"
-                  value={refillForm.customerId}
-                  onChange={(event) =>
-                    setRefillForm((current) => ({ ...current, customerId: event.target.value }))
-                  }
-                >
+                <TextField select label="Customer" value={refillForm.customerId} disabled>
                   {renderCustomerOptions()}
                 </TextField>
                 <TextField
@@ -419,7 +422,7 @@ function Operations() {
                       pricePerUnit: event.target.value
                     }))
                   }
-                  helperText="If this pushes deposit below zero, the negative balance is what the customer owes the client."
+                  helperText="If this pushes deposit below zero, that negative balance is what the customer owes Krishna RO."
                 />
                 <Button variant="contained" onClick={submitRefill} disabled={isSubmitting.refill}>
                   {isSubmitting.refill ? "Saving..." : "Record refill"}
@@ -438,14 +441,7 @@ function Operations() {
                   {feedback.return.text && (
                     <Alert severity={feedback.return.type || "info"}>{feedback.return.text}</Alert>
                   )}
-                  <TextField
-                    select
-                    label="Customer"
-                    value={returnForm.customerId}
-                    onChange={(event) =>
-                      setReturnForm((current) => ({ ...current, customerId: event.target.value }))
-                    }
-                  >
+                  <TextField select label="Customer" value={returnForm.customerId} disabled>
                     {renderCustomerOptions()}
                   </TextField>
                   <TextField
@@ -527,7 +523,7 @@ function Operations() {
                 Remaining deposit balance: {formatCurrency(selectedRefillCustomer.depositBalance)}
               </Typography>
               <Typography color="text.secondary">
-                Negative balance means this customer now owes money to the client.
+                Negative balance means this customer now owes money to Krishna RO.
               </Typography>
             </Stack>
           )}

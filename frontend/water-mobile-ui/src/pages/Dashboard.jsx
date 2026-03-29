@@ -6,10 +6,9 @@ import SwapHorizRoundedIcon from "@mui/icons-material/SwapHorizRounded"
 import { Alert, Box, Button, Chip, Stack, Typography } from "@mui/material"
 import { useNavigate } from "react-router-dom"
 import EmptyState from "../components/EmptyState"
-import MetricCard from "../components/MetricCard"
 import SectionCard from "../components/SectionCard"
 import { useAppData } from "../context/AppDataContext"
-import { formatCurrency, formatItemType, formatNumber, getActiveItemCount } from "../utils/formatters"
+import { formatCurrency, formatNumber, getActiveItemCount } from "../utils/formatters"
 
 function Dashboard() {
   const navigate = useNavigate()
@@ -18,7 +17,6 @@ function Dashboard() {
   const totalActiveItems = customers.reduce((sum, customer) => sum + getActiveItemCount(customer), 0)
   const totalDeposit = customers.reduce((sum, customer) => sum + Number(customer.depositBalance || 0), 0)
   const totalAvailable = inventory.reduce((sum, item) => sum + Number(item.availableStock || 0), 0)
-  const totalBorrowed = inventory.reduce((sum, item) => sum + Number(item.borrowedStock || 0), 0)
 
   const focusCustomers = [...customers]
     .sort((left, right) => getActiveItemCount(right) - getActiveItemCount(left))
@@ -32,38 +30,11 @@ function Dashboard() {
         </Alert>
       )}
 
-      <Box className="dashboard-grid">
-        <MetricCard
-          label="Households"
-          value={formatNumber(customers.length)}
-          note="Active customers in your base"
-          tone="ocean"
-        />
-        <MetricCard
-          label="Items in circulation"
-          value={formatNumber(totalActiveItems)}
-          note={`${formatNumber(totalBorrowed)} marked as borrowed in stock`}
-          tone="sun"
-        />
-        <MetricCard
-          label="Deposit balance"
-          value={formatCurrency(totalDeposit)}
-          note="Current remaining customer deposit balance"
-          tone="sage"
-        />
-        <MetricCard
-          label="Ready stock"
-          value={formatNumber(totalAvailable)}
-          note={`${formatNumber(inventory.length)} inventory lines live`}
-          tone="night"
-        />
-      </Box>
-
       <Box className="content-grid">
         <SectionCard
-          eyebrow="Command center"
-          title="Move the day forward"
-          description="Use these shortcuts to onboard customers, add stock, process operations, and review ledgers without hunting through the app."
+          eyebrow="Quick actions"
+          title="Run Krishna RO smoothly"
+          description="Keep the day moving with the main actions you use most often."
         >
           <Box className="button-cluster">
             <Button
@@ -105,49 +76,35 @@ function Dashboard() {
         </SectionCard>
 
         <SectionCard
-          eyebrow="Stock line"
-          title="Inventory snapshot"
-          description="A quick read on what is ready, borrowed, and total across the items you track."
+          eyebrow="Today's snapshot"
+          title="Business summary"
+          description="A simple read on customers, active stock, and running balance."
         >
-          {inventory.length ? (
-            <Stack spacing={1.5}>
-              {inventory.map((item) => (
-                <Box key={item.itemType} className="mini-card">
-                  <Stack direction="row" justifyContent="space-between" alignItems="center" gap={2}>
-                    <Box>
-                      <Typography variant="h6">{formatItemType(item.itemType)}</Typography>
-                      <Typography color="text.secondary">
-                        Total {formatNumber(item.totalStock)} units
-                      </Typography>
-                    </Box>
-                    <Chip
-                      label={`${formatNumber(item.availableStock)} ready`}
-                      color="primary"
-                      variant="outlined"
-                    />
-                  </Stack>
-                  <Box className="status-row" sx={{ mt: 1.5 }}>
-                    <Chip label={`Borrowed ${formatNumber(item.borrowedStock)}`} size="small" />
-                    <Chip label={`Available ${formatNumber(item.availableStock)}`} size="small" />
-                  </Box>
-                </Box>
-              ))}
-            </Stack>
-          ) : (
-            <EmptyState
-              title="No inventory yet"
-              description="Add your first stock line to start processing borrows and returns."
-              actionLabel="Add stock"
-              onAction={() => navigate("/inventory")}
-            />
-          )}
+          <Box className="list-grid">
+            <Box className="mini-card">
+              <Typography variant="h6">{formatNumber(customers.length)} customers</Typography>
+              <Typography color="text.secondary">Registered with Krishna RO</Typography>
+            </Box>
+            <Box className="mini-card">
+              <Typography variant="h6">{formatNumber(totalActiveItems)} active items</Typography>
+              <Typography color="text.secondary">Currently out with customers</Typography>
+            </Box>
+            <Box className="mini-card">
+              <Typography variant="h6">{formatNumber(totalAvailable)} stock ready</Typography>
+              <Typography color="text.secondary">Available for the next delivery</Typography>
+            </Box>
+            <Box className="mini-card">
+              <Typography variant="h6">{formatCurrency(totalDeposit)}</Typography>
+              <Typography color="text.secondary">Current running customer balance</Typography>
+            </Box>
+          </Box>
         </SectionCard>
       </Box>
 
       <SectionCard
-        eyebrow="Priority watch"
-        title="Customers to keep an eye on"
-        description="These accounts currently hold the most active items, so they are the fastest way to check exposure and open ledger items."
+        eyebrow="Customer watch"
+        title="Accounts to check first"
+        description="These customers currently hold the most active items, so they are the quickest place to review balances and ledgers."
       >
         {focusCustomers.length ? (
           <Box className="list-grid">
