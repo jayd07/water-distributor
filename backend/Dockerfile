@@ -1,17 +1,19 @@
+# -------- BUILD STAGE --------
 FROM maven:3.9.9-eclipse-temurin-17 AS build
 WORKDIR /app
-
 COPY pom.xml .
 RUN mvn -q -DskipTests dependency:go-offline
-
 COPY src ./src
 RUN mvn -q -DskipTests package
 
+# -------- RUNTIME STAGE --------
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 
-COPY --from=build /app/target/water-distribution-system-1.0.jar app.jar
+# Copy jar dynamically
+COPY --from=build /app/target/*.jar app.jar
 
-EXPOSE 8098
+# Render provides PORT dynamically
+EXPOSE 8080
 
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
