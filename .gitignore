@@ -29,26 +29,26 @@ backend/application-local.yml
 ############################
 # Frontend (Node / React / Vue)
 ############################
-frontend/node_modules/
-frontend/dist/
-frontend/build/
-frontend/.next/
-frontend/.nuxt/
-frontend/.cache/
-frontend/coverage/
+frontend/water-mobile-ui/node_modules/
+frontend/water-mobile-ui/dist/
+frontend/water-mobile-ui/build/
+frontend/water-mobile-ui/.next/
+frontend/water-mobile-ui/.nuxt/
+frontend/water-mobile-ui/.cache/
+frontend/water-mobile-ui/coverage/
 
 # Logs
-frontend/npm-debug.log*
-frontend/yarn-debug.log*
-frontend/yarn-error.log*
+frontend/water-mobile-ui/npm-debug.log*
+frontend/water-mobile-ui/yarn-debug.log*
+frontend/water-mobile-ui/yarn-error.log*
 
 ############################
 # Ignore non-deployable frontend modules
 # (customize these based on your folders)
 ############################
-frontend/dev-only/
-frontend/experimental/
-frontend/tests/
+frontend/water-mobile-ui/dev-only/
+frontend/water-mobile-ui/experimental/
+frontend/water-mobile-ui/tests/
 
 ############################
 # Misc
