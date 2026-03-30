@@ -1,7 +1,8 @@
 import axios from "axios"
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? "/api" : "http://localhost:8098")
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.DEV ? "/api" : "https://water-distributor.onrender.com")
 
 const APP_CACHE_VERSION = "v2"
 const CACHE_NAMESPACE = `krishna-ro:${APP_CACHE_VERSION}:${API_BASE_URL}`
@@ -9,7 +10,7 @@ const LEGACY_CACHE_KEYS = ["customers", "inventory"]
 
 const API = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000
+  timeout: 30000
 })
 
 const getScopedCacheKey = (key) => `${CACHE_NAMESPACE}:${key}`
@@ -84,6 +85,10 @@ export const getErrorMessage = (error, fallback = "Something went wrong.") => {
 
   if (error?.message === "Network Error") {
     return "The backend is not reachable right now."
+  }
+
+  if (error?.code === "ECONNABORTED") {
+    return "The backend is taking too long to respond. If it is hosted on Render, it may still be waking up."
   }
 
   return fallback
