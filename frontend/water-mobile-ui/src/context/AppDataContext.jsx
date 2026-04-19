@@ -157,15 +157,23 @@ export function AppDataProvider({ children }) {
     })
   }
 
-  const applyRefillLocally = ({ customerId, quantity, pricePerUnit }) => {
+  const applyRefillLocally = ({ customerId, quantity, pricePerUnit, totalAmount, items = [] }) => {
+    const amount =
+      Number.isFinite(Number(totalAmount)) && totalAmount !== ""
+        ? Number(totalAmount)
+        : Number(quantity) * Number(pricePerUnit)
+    const itemSummary = items.length
+      ? items
+          .map((item) => `${item.quantity} ${item.itemType} @ ${item.pricePerUnit}`)
+          .join(", ")
+      : `${quantity} units`
+
     persistCustomers((current) =>
       current.map((customer) =>
         String(customer.customerId) === String(customerId)
           ? {
               ...customer,
-              depositBalance:
-                Number(customer.depositBalance || 0) -
-                Number(quantity) * Number(pricePerUnit)
+              depositBalance: Number(customer.depositBalance || 0) - amount
             }
           : customer
       )
@@ -174,9 +182,9 @@ export function AppDataProvider({ children }) {
     appendLedgerPreview({
       customerId,
       transactionType: "REFILL",
-      description: `Refilled ${quantity} units, adjusted against deposit`,
+      description: `Refilled ${itemSummary}, adjusted against deposit`,
       quantity,
-      amount: Number(quantity) * Number(pricePerUnit)
+      amount
     })
   }
 

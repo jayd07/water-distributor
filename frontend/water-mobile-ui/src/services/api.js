@@ -103,11 +103,22 @@ export const createCustomer = async (payload) => {
 
 export const getInventory = () => fetchWithCache("inventory", () => API.get("/inventory"))
 
-export const addInventory = async ({ itemType, quantity }) => {
+export const addInventory = async ({ itemType, quantity, refillPricePerUnit }) => {
   const response = await API.post("/inventory/add", null, {
     params: {
       itemType: normalizeItemType(itemType),
-      quantity: Number(quantity)
+      quantity: Number(quantity),
+      refillPricePerUnit: Number(refillPricePerUnit)
+    }
+  })
+
+  return response.data
+}
+
+export const updateInventoryRefillPrice = async ({ itemType, refillPricePerUnit }) => {
+  const response = await API.post(`/inventory/${normalizeItemType(itemType)}/refill-price`, null, {
+    params: {
+      refillPricePerUnit: Number(refillPricePerUnit)
     }
   })
 
@@ -127,11 +138,14 @@ export const createBorrow = async ({ customerId, itemType, quantity, depositPerU
   return response.data
 }
 
-export const createRefill = async ({ customerId, quantity, pricePerUnit }) => {
+export const createRefill = async ({ customerId, items }) => {
   const response = await API.post("/refill", {
     customerId: Number(customerId),
-    quantity: Number(quantity),
-    pricePerUnit: Number(pricePerUnit)
+    items: items.map((item) => ({
+      itemType: normalizeItemType(item.itemType),
+      quantity: Number(item.quantity),
+      pricePerUnit: Number(item.pricePerUnit)
+    }))
   })
 
   return response.data
