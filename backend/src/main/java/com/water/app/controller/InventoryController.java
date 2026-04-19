@@ -18,9 +18,17 @@ public class InventoryController {
 
     @PostMapping("/add")
     public Inventory addInventory(@RequestParam String itemType,
-                                  @RequestParam Integer quantity) {
+                                  @RequestParam Integer quantity,
+                                  @RequestParam(required = false) Double refillPricePerUnit) {
 
-        return service.addInventory(itemType, quantity);
+        return service.addInventory(itemType, quantity, refillPricePerUnit);
+    }
+
+    @PostMapping("/{itemType}/refill-price")
+    public Inventory updateRefillPrice(@PathVariable String itemType,
+                                       @RequestParam Double refillPricePerUnit) {
+
+        return service.updateRefillPrice(itemType, refillPricePerUnit);
     }
 
     @GetMapping

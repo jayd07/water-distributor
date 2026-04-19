@@ -17,7 +17,7 @@ public class InventoryService {
     }
 
     @Transactional
-    public Inventory addInventory(String itemType, Integer quantity) {
+    public Inventory addInventory(String itemType, Integer quantity, Double refillPricePerUnit) {
 
         Inventory inventory = repository.findById(itemType).orElse(null);
 
@@ -27,11 +27,26 @@ public class InventoryService {
             inventory.setTotalStock(quantity);
             inventory.setAvailableStock(quantity);
             inventory.setBorrowedStock(0);
+            inventory.setRefillPricePerUnit(refillPricePerUnit == null ? 0 : refillPricePerUnit);
         } else {
             inventory.setTotalStock(inventory.getTotalStock() + quantity);
             inventory.setAvailableStock(inventory.getAvailableStock() + quantity);
+            if (refillPricePerUnit != null) {
+                inventory.setRefillPricePerUnit(refillPricePerUnit);
+            }
         }
 
+        return repository.save(inventory);
+    }
+
+    @Transactional
+    public Inventory updateRefillPrice(String itemType, Double refillPricePerUnit) {
+        if (refillPricePerUnit == null || refillPricePerUnit < 0) {
+            throw new RuntimeException("Refill price per unit must be zero or greater");
+        }
+
+        Inventory inventory = repository.findById(itemType).orElseThrow(() -> new RuntimeException("Item not found"));
+        inventory.setRefillPricePerUnit(refillPricePerUnit);
         return repository.save(inventory);
     }
 
