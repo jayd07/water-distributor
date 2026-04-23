@@ -19,5 +19,5 @@ jobs:
           script: |
             cd /home/ubuntu/water-distributor/backend
             git pull origin main
-            chmod +x run.sh
-            ./run.sh
+            chmod +x deploy.sh
+            ./deploy.sh
