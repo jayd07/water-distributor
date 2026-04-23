@@ -1,0 +1,65 @@
+name: Deploy Specific Commit JAR
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit_id:
+        description: "Enter commit SHA to deploy"
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout specific commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.commit_id }}
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Build JAR
+        run: |
+          cd backend
+          mvn clean package -DskipTests
+
+      - name: Copy JAR to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_KEY }}
+          source: "backend/target/*.jar"
+          target: "/home/ubuntu/app/"
+
+      - name: Replace and Restart App
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            cd /home/ubuntu/app
+
+            echo "Stopping old app..."
+            pkill -f 'java -jar' || true
+
+            echo "Cleaning old jar..."
+            rm -f app.jar
+
+            echo "Moving new jar..."
+            JAR=$(ls -t *.jar | head -n 1)
+            mv "$JAR" app.jar
+
+            echo "Removing leftover jars..."
+            find . -name "*.jar" ! -name "app.jar" -delete
+
+            echo "Starting app..."
+            nohup java -jar app.jar > app.log 2>&1 &
+
+            echo "Deployment complete!"
