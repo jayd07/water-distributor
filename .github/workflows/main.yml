@@ -53,9 +53,6 @@ jobs:
             echo "Picking latest uploaded jar..."
             JAR=$(ls -t *.jar | head -n 1)
       
-            echo "Renaming to app.jar..."
-            mv "$JAR" app.jar
-      
             echo "Cleaning extra jars..."
             find . -name "*.jar" ! -name "app.jar" -delete
       
@@ -69,7 +66,5 @@ jobs:
               --name backend \
               --restart always \
               water-backend
-            
-            echo "Done"
       
             echo "Done"
