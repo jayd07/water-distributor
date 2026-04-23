@@ -44,7 +44,8 @@ jobs:
             cd /home/ubuntu/app
       
             echo "Stopping old app..."
-            pkill -f 'java -jar' || true
+            docker stop backend || true
+            docker rm backend || true
       
             echo "Removing old jar..."
             rm -f app.jar
