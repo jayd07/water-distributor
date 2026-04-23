@@ -34,7 +34,7 @@ jobs:
           target: "/home/ubuntu/app/"
           strip_components: 2
 
-      - name: Rename JAR
+      - name: Replace and Restart App
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -42,15 +42,23 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             cd /home/ubuntu/app
-            mv *.jar app.jar
-
-      - name: Restart App
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_KEY }}
-          script: |
-            cd /home/ubuntu/app
-            chmod +x run.sh
-            ./run.sh
+      
+            echo "Stopping old app..."
+            pkill -f 'java -jar' || true
+      
+            echo "Removing old jar..."
+            rm -f app.jar
+      
+            echo "Picking latest uploaded jar..."
+            JAR=$(ls -t *.jar | head -n 1)
+      
+            echo "Renaming to app.jar..."
+            mv "$JAR" app.jar
+      
+            echo "Cleaning extra jars..."
+            find . -name "*.jar" ! -name "app.jar" -delete
+      
+            echo "Starting app..."
+            nohup java -jar app.jar > app.log 2>&1 &
+      
+            echo "Done"
