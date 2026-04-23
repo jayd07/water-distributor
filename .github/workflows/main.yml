@@ -59,7 +59,17 @@ jobs:
             echo "Cleaning extra jars..."
             find . -name "*.jar" ! -name "app.jar" -delete
       
-            echo "Starting app..."
-            nohup java -jar app.jar > app.log 2>&1 &
+            echo "Building Docker image..."
+            docker build -t water-backend .
+            
+            echo "Starting container..."
+            docker run -d \
+              -p 8099:8080 \
+              --env-file .env \
+              --name backend \
+              --restart always \
+              water-backend
+            
+            echo "Done"
       
             echo "Done"
